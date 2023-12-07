@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "390165653544",
+    "project_id": "sotabots-crescendo-scouting",
+    "storage_bucket": "sotabots-crescendo-scouting.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390165653544:android:a23101ad725e34fef56d1d",
+        "android_client_info": {
+          "package_name": "com.example.sotabotsscouting2024crescendo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDp_UcjjgTbLABbODnsMLPLa7U7ZesIxYc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
