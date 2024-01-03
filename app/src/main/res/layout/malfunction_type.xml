@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#303030"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Main">
+
+    <TextView
+        android:id="@+id/malfTeam"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#222222"
+        android:text="Team"
+        android:textSize="55sp"
+        android:textAlignment="center"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <RadioGroup
+        android:id="@+id/malfRadioGroup"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintTop_toBottomOf="@id/malfTeam"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.3"
+
+        >
+
+        <RadioButton
+            android:id="@+id/malfNothing"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#222222"
+            android:text="Nothing Wrong"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            android:checked="true"
+            />
+
+        <RadioButton
+            android:id="@+id/malfBroken"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#222222"
+            android:text="Broken Mechanism"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            android:layout_marginTop="20dp"
+            />
+
+        <RadioButton
+            android:id="@+id/malfDisabled"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#222222"
+            android:text="Disabled"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            android:layout_marginTop="20dp"
+            />
+        <RadioButton
+            android:id="@+id/malfNoShow"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#222222"
+            android:text="No Show"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            android:layout_marginTop="20dp"
+            />
+
+
+    </RadioGroup>
+
+
+    <Button
+        android:id="@+id/malfNext"
+        android:layout_width="140dp"
+        android:layout_height="80dp"
+        android:background="#222222"
+        android:text="Next"
+        android:textColor="@color/white"
+        android:textSize="35sp"
+        app:layout_constraintTop_toBottomOf="@id/malfRadioGroup"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.85"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -73,6 +73,13 @@ class Main : Activity() {
         }
     }
 
+    private fun onNewStart () {
+        setContentView(layout.start)
+        hideSystemUI()
+        data.clear()
+        findViewById<Button>(id.startButton).setOnClickListener { setPoseView() }
+    }
+
     // Method to set the app layout to the set_pose page
     private fun setPoseView () {
         setContentView(layout.set_pose) // set view to set_pose layout
@@ -126,61 +133,137 @@ class Main : Activity() {
         hideSystemUI()
         var counterTeam = findViewById<TextView>(id.countTeam)
         counterTeam.background = color
-//        counterTeam.setText(teamNum) // TODO: problematic for some reason. fix
-//        var counter = 0
-        var incrementors = listOf<View>(
-            findViewById<Button>(id.increaseCounter)
+        counterTeam.setText(teamNum.toString())
+        
+        // list of each incrementing button
+        var incrementers = listOf<Button>(
+            findViewById(id.increaseCounter),
+            findViewById(id.increaseCounter2),
+            findViewById(id.counter4up)
         )
 
-        var decrementors = listOf<View>(
-            findViewById<Button>(id.lowerCounter)
+        // list of each decrementing button
+        var decrementers = listOf<Button>(
+            findViewById(id.lowerCounter),
+            findViewById(id.lowerCounter2),
+            findViewById(id.counter4down)
         )
 
-        var counters = listOf<View> (
-            findViewById(id.counter)
+        // list of each counter textView
+        var counters = listOf<TextView> (
+            findViewById(id.count),
+            findViewById(id.counter2),
+            findViewById(id.counter4)
         )
+        // list of each counter's value. order is the same as declared in the button lists. All values start at 0
+        var counterValue = mutableListOf<Int>(0, 0, 0)
 
-        var counterValue = mutableListOf<Int>(0) // if i end up using this method, label order of counters
 
-        counters.forEachIndexed { index, counter ->
-            val counterView = counter as TextView
-            setData(counter) // TODO: setData method. maybe talk with jon about this one
+        counters.forEachIndexed { index, counterView -> // counterView is the element at the index of the counters list
+            var test = if (index != 3) {counterView.hint.toString() + ": " + counterValue[index].toString()}  else {counterValue[index].toString()}
+
+//            setCounterData(counterView, counterValue[index]) // TODO: this brokey fix :)
+
+            // Updates the number on text of the counter. The name is stored in the hint of the textView, which is not visible
             counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
+            incrementers[index].setOnClickListener{
 
-            incrementors[index].setOnClickListener{
+                // increment the value of this counter when the + is pressed
                 counterValue[index]++
+//                setCounterData(counterView, counterValue[index])
+                // Updates the number on the text of the counter when it is incremented
                 counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
             }
 
-            decrementors[index].setOnClickListener {
-                counterValue[index]--
+            decrementers[index].setOnClickListener {
+
+                // decrement the value of this counter when the - is pressed. The if statement prevents negative numbers
+                if (counterValue[index] > 0) counterValue[index]--
+//                setCounterData(counterView, counterValue[index])
+                // updates the number on the text of the counter when it is decremented.
                 counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
             }
 
         }
+        findViewById<Button>(id.counterNext).setOnClickListener {setMalfunctionView()}
+        
+    }
 
-//        incrementors.forEach {
-//            val x = findViewById<Button>(it.id)
-//            val count = findViewById<TextView>(x.hint.get)
-//            x.setOnClickListener() {
-////                counter++
-////                count.setText("Count: " + counter)
-//                incrementData(x)
-//
-//            }
-//
-//        }
+    private fun setMalfunctionView() {
+        setContentView(layout.malfunction_type)
+        hideSystemUI()
 
+        var team = findViewById<TextView>(id.malfTeam)
+        team.text = teamNum.toString()
+        team.background = color
 
+        findViewById<Button>(id.malfNext).setOnClickListener {setFinalView()}
 
-
-
-
+        var radioGroup = listOf<View> (
+            findViewById(id.malfNothing),
+            findViewById(id.malfBroken),
+            findViewById(id.malfDisabled),
+            findViewById(id.malfNoShow)
+        )
+        radioGroup.forEach() {
+            it.setOnClickListener {
+                val x = findViewById<View>(it.id)
+                malfunctionData(x)
+            }
+        }
 
     }
 
-    private fun setData(view: View) {
+    private fun setFinalView () {
+        setContentView(layout.result)
+        hideSystemUI()
 
+        var team = findViewById<TextView>(id.resultTeam)
+        team.text = teamNum.toString()
+        team.background = color
+
+        findViewById<Button>(id.resultWin).setOnClickListener { finish(it) }
+        findViewById<Button>(id.resultTie).setOnClickListener { finish(it) }
+        findViewById<Button>(id.resultLose).setOnClickListener { finish(it) }
+    }
+
+    private fun finish(view: View) {
+//        var result = view.tag.toString() // TODO: this brokey :(
+//        when (result) {
+//            "win" -> data["result"] = "win"
+//            "tie" -> data["result"] = "tie"
+//            "lose" -> data["result"] = "lose"
+//        }
+
+//        publishData()
+//        onNewStart()
+    }
+
+    private fun malfunctionData(view: View) { //TODO: Test to see if having a single data call works (data[ind] = view.text or whatever)
+        val ind = "malfunction"
+        when (view.id) {
+            id.malfNothing -> {
+                data.putIfAbsent(ind, 0)
+                data[ind] = "Nothing Wrong"
+            }
+            id.malfBroken -> {
+                data.putIfAbsent(ind, 1)
+                data[ind] = "Broken Mechanism"
+            }
+            id.malfDisabled -> {
+                data.putIfAbsent(ind, 2)
+                data[ind] = "Disabled"
+            }
+            id.malfNoShow -> {
+                data.putIfAbsent(ind, 3)
+                data[ind] = "No Show"
+            }
+        }
+    }
+
+    private fun setCounterData(view: View, value: Int) {
+        data.putIfAbsent(view.tag.toString(), 0)
+        data[view.tag.toString()] = value
     }
 
     private fun setPose (view: View) {
