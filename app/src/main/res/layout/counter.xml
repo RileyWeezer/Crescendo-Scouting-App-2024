@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#303030"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Main">
+
+    <TextView
+        android:id="@+id/countTeam"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="15dp"
+        android:background="#222222"
+        android:text="Team"
+        android:textColor="@color/white"
+        android:textSize="50sp"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        />
+
+    <TextView
+        android:id="@+id/counter"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:background="#222222"
+        android:text="Count: 0"
+        android:hint="Count"
+        android:textColor="@color/white"
+        android:textSize="37sp"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@+id/countTeam"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintHorizontal_bias="0.12"
+        />
+
+    <Button
+        android:id="@+id/increaseCounter"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="#222222"
+        android:text="+"
+        android:hint="counter"
+        android:textSize="37sp"
+        android:textColor="@color/white"
+        android:layout_marginStart="20dp"
+        app:layout_constraintTop_toTopOf="@+id/counter"
+        app:layout_constraintStart_toEndOf="@+id/counter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        />
+
+    <Button
+        android:id="@+id/lowerCounter"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="#222222"
+        android:text="-"
+        android:hint="counter"
+        android:textSize="37sp"
+        android:textColor="@color/white"
+        android:layout_marginStart="20dp"
+        app:layout_constraintTop_toTopOf="@+id/counter"
+        app:layout_constraintStart_toEndOf="@id/increaseCounter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        />
+
+    <Button
+        android:id="@+id/counterNext"
+        android:layout_width="140dp"
+        android:layout_height="80dp"
+        android:background="#222222"
+        android:text="Next"
+        android:textSize="35sp"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/countTeam"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/lowerCounter"
+        app:layout_constraintVertical_bias="0.9"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

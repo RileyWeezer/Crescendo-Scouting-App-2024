@@ -24,6 +24,7 @@ import com.example.sotabotsscouting2024crescendo.R.*
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import org.w3c.dom.Text
 import java.util.Stack
 
 class Main : Activity() {
@@ -32,7 +33,7 @@ class Main : Activity() {
 
      */
     lateinit var data: MutableMap<String, Any> // map of each data piece, and its name (ex: "team", 2557)
-    var pose = 0; // position of the team (red or blue)
+    var pose: Int = 0; // position of the team (red or blue)
     var teamNum = 0; // team number of the current app iteration
     lateinit var poseTXT: String
     lateinit var color: Drawable
@@ -43,10 +44,10 @@ class Main : Activity() {
         super.onCreate(saveInstanceState)
         start()
     }
-//    override fun onCreate(saveInstanceState: Bundle?, persistentState: PersistableBundle) {
-//        super.onCreate(saveInstanceState, persistentState)
-//        start()
-//    }
+    override fun onCreate(saveInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(saveInstanceState, persistentState)
+        start()
+    }
 
     fun start() {
         setContentView(layout.start) // Sets view of app to be start layout
@@ -87,8 +88,107 @@ class Main : Activity() {
         poseList.forEach() {z -> z.setOnClickListener() {x -> setPose(x)}}
     }
 
-    private fun setPose (view: View) {
+    private fun initializeView () {
+        setContentView(layout.initialize) // set view to initialize layout
+        hideSystemUI()
+        var initPose = findViewById<TextView>(id.initPose)
+        initPose.background = color
+        initPose.setText(poseTXT)
 
+        findViewById<Button>(id.initNext).setOnClickListener() {initializeData()}
+
+
+    }
+
+    private fun initializeData () {
+        if (findViewById<TextView>(id.initTeam).text.toString() == "" ||
+            findViewById<TextView>(id.initMatch).text.toString() == "") return
+        data.clear()
+
+        teamNum = findViewById<EditText>(id.initTeam).text.toString().toInt()
+        data["pose"] = poseTXT
+        data["team"] = teamNum
+        data["match"] = findViewById<EditText>(id.initMatch).text.toString().toInt()
+
+        setCounter()
+
+//        setContentView(layout.counter)
+    }
+//    private fun incrementData (view: View) {
+//        var button: Button = findViewById(view.id)
+//        val id = button.hint.toString();
+//    }
+
+
+    // TODO: Change this to real game layout
+    private fun setCounter () {
+        setContentView(layout.counter)
+        hideSystemUI()
+        var counterTeam = findViewById<TextView>(id.countTeam)
+        counterTeam.background = color
+//        counterTeam.setText(teamNum) // TODO: problematic for some reason. fix
+//        var counter = 0
+        var incrementors = listOf<View>(
+            findViewById<Button>(id.increaseCounter)
+        )
+
+        var decrementors = listOf<View>(
+            findViewById<Button>(id.lowerCounter)
+        )
+
+        var counters = listOf<View> (
+            findViewById(id.counter)
+        )
+
+        var counterValue = mutableListOf<Int>(0) // if i end up using this method, label order of counters
+
+        counters.forEachIndexed { index, counter ->
+            val counterView = counter as TextView
+            setData(counter) // TODO: setData method. maybe talk with jon about this one
+            counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
+
+            incrementors[index].setOnClickListener{
+                counterValue[index]++
+                counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
+            }
+
+            decrementors[index].setOnClickListener {
+                counterValue[index]--
+                counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
+            }
+
+        }
+
+//        incrementors.forEach {
+//            val x = findViewById<Button>(it.id)
+//            val count = findViewById<TextView>(x.hint.get)
+//            x.setOnClickListener() {
+////                counter++
+////                count.setText("Count: " + counter)
+//                incrementData(x)
+//
+//            }
+//
+//        }
+
+
+
+
+
+
+
+    }
+
+    private fun setData(view: View) {
+
+    }
+
+    private fun setPose (view: View) {
+        var button = findViewById<Button>(view.id) // creates a variable for the pose button (Blue 1, red 3 etc.)
+        this.pose = button.text.toString().toCharArray().lastIndex.toInt() // sets pose to the last char of the button text
+        this.color = button.background // sets color to be the color of the button that was pressed
+        this.poseTXT = button.text.toString() // sets poseTXT to be the entire button text
+        initializeView()
     }
 
     // This method
