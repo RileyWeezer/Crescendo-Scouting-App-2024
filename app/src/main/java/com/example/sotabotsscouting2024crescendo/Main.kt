@@ -119,13 +119,8 @@ class Main : Activity() {
 
         setCounter()
 
-//        setContentView(layout.counter)
-    }
-//    private fun incrementData (view: View) {
-//        var button: Button = findViewById(view.id)
-//        val id = button.hint.toString();
-//    }
 
+    }
 
     // TODO: Change this to real game layout
     private fun setCounter () {
@@ -162,7 +157,7 @@ class Main : Activity() {
         counters.forEachIndexed { index, counterView -> // counterView is the element at the index of the counters list
             var test = if (index != 3) {counterView.hint.toString() + ": " + counterValue[index].toString()}  else {counterValue[index].toString()}
 
-//            setCounterData(counterView, counterValue[index]) // TODO: this brokey fix :)
+            setCounterData(counterView, counterValue[index])
 
             // Updates the number on text of the counter. The name is stored in the hint of the textView, which is not visible
             counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
@@ -222,24 +217,27 @@ class Main : Activity() {
         team.text = teamNum.toString()
         team.background = color
 
+
         findViewById<Button>(id.resultWin).setOnClickListener { finish(it) }
         findViewById<Button>(id.resultTie).setOnClickListener { finish(it) }
         findViewById<Button>(id.resultLose).setOnClickListener { finish(it) }
     }
 
     private fun finish(view: View) {
-//        var result = view.tag.toString() // TODO: this brokey :(
-//        when (result) {
-//            "win" -> data["result"] = "win"
-//            "tie" -> data["result"] = "tie"
-//            "lose" -> data["result"] = "lose"
-//        }
+        view as TextView
+        var result = view.hint.toString()
+        when (result) {
+            "win" -> data["result"] = "win"
+            "tie" -> data["result"] = "tie"
+            "lose" -> data["result"] = "lose"
+        }
 
-//        publishData()
-//        onNewStart()
+        publishData()
+        onNewStart()
     }
 
     private fun malfunctionData(view: View) { //TODO: Test to see if having a single data call works (data[ind] = view.text or whatever)
+        view as TextView
         val ind = "malfunction"
         when (view.id) {
             id.malfNothing -> {
@@ -261,9 +259,9 @@ class Main : Activity() {
         }
     }
 
-    private fun setCounterData(view: View, value: Int) {
-        data.putIfAbsent(view.tag.toString(), 0)
-        data[view.tag.toString()] = value
+    private fun setCounterData(view: TextView, value: Int) { //TODO: Not broken but doesn't work
+        data.putIfAbsent(view.hint.toString(), 0)
+        data[view.hint.toString()] = value
     }
 
     private fun setPose (view: View) {
@@ -280,7 +278,9 @@ class Main : Activity() {
             "team",
             "pose",
             "match",
-            "count",
+            "Count",
+            "Silliness",
+            "Score",
             "malfunction",
             "result"
         )
@@ -290,7 +290,7 @@ class Main : Activity() {
 
         var ref = dataBase.getReference(
             "Teams/" + data["team"].toString()
-                    + "Matches/" + data["match"])
+                    + "/" + "Matches/" + data["match"])
         ref.setValue(data)
 
     }

@@ -14,6 +14,7 @@
         android:layout_marginTop="15dp"
         android:background="#222222"
         android:text="Team"
+        android:textColor="@color/black"
         android:textSize="55sp"
         android:textAlignment="center"
         app:layout_constraintTop_toTopOf="parent"
