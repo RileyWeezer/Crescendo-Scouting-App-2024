@@ -33,11 +33,11 @@ class Main : Activity() {
 
      */
     lateinit var data: MutableMap<String, Any> // map of each data piece, and its name (ex: "team", 2557)
-    var pose: Int = 0; // position of the team (red or blue)
+    var pose: Int = 0; // robot position of the team (1, 3 etc.)
     var teamNum = 0; // team number of the current app iteration
-    lateinit var poseTXT: String
-    lateinit var color: Drawable
-    lateinit var prevChange: Stack<View>
+    lateinit var poseTXT: String // full position of current team (red1, blue2 etc.)
+    lateinit var color: Drawable // Color value of current team for team display background
+    lateinit var prevChange: Stack<View> //  Stack of changes for undo button (may not use)
     var dataBase: FirebaseDatabase = Firebase.database("https://sotabots-crescendo-scouting-default-rtdb.firebaseio.com/") // instance of the firebase database
 
     override fun onCreate(saveInstanceState: Bundle?) {
@@ -49,26 +49,27 @@ class Main : Activity() {
         start()
     }
 
-    fun start() {
+    private fun start() {
         setContentView(layout.start) // Sets view of app to be start layout
         findViewById<Button>(id.startButton).setOnClickListener() {x -> setPoseView()} // Creates
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) // Locks orientation of app to be portrait (i think)
-        data = mutableMapOf()
-        prevChange = Stack()
+        data = mutableMapOf() // Creates a data map for each collectable piece of data
+        prevChange = Stack() // Creates a stack of changes used for an undo button (may not use)
         dataBase.setPersistenceEnabled(true)
         hideSystemUI() // Hides system UI
     }
 
-    // Method that will hide the System UI of the app while running. Back, Home, and App Navigator should be hidden.
+    /**
+     * Method that will hide the System UI of the app while running. Back, Home, and App Navigator should be hidden.
+      */
+
     private fun hideSystemUI() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(window,
             window.decorView.findViewById(R.id.content)).let { controller ->
             controller.hide(WindowInsetsCompat.Type.systemBars())
 
-            // When the screen is swiped up at the bottom
-            // of the application, the navigationBar shall
-            // appear for some time
+            // Show app navigator panel when bottom of screen is swiped up
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
@@ -84,7 +85,7 @@ class Main : Activity() {
     private fun setPoseView () {
         setContentView(layout.set_pose) // set view to set_pose layout
         hideSystemUI() // hides system UI
-        var poseList = listOf<View>( // create a list of buttons for each pose
+        val poseList = listOf<View>( // create a list of buttons for each pose
             findViewById<Button>(id.red1),
             findViewById<Button>(id.red2),
             findViewById<Button>(id.red3),
@@ -98,7 +99,7 @@ class Main : Activity() {
     private fun initializeView () {
         setContentView(layout.initialize) // set view to initialize layout
         hideSystemUI()
-        var initPose = findViewById<TextView>(id.initPose)
+        val initPose = findViewById<TextView>(id.initPose)
         initPose.background = color
         initPose.setText(poseTXT)
 
@@ -107,7 +108,7 @@ class Main : Activity() {
 
     }
 
-    private fun initializeData () {
+    private fun initializeData () { // TODO: Document this method
         if (findViewById<TextView>(id.initTeam).text.toString() == "" ||
             findViewById<TextView>(id.initMatch).text.toString() == "") return
         data.clear()
@@ -134,6 +135,7 @@ class Main : Activity() {
         var incrementers = listOf<Button>(
             findViewById(id.increaseCounter),
             findViewById(id.increaseCounter2),
+            findViewById(id.counter3up),
             findViewById(id.counter4up)
         )
 
@@ -141,6 +143,7 @@ class Main : Activity() {
         var decrementers = listOf<Button>(
             findViewById(id.lowerCounter),
             findViewById(id.lowerCounter2),
+            findViewById(id.counter3down),
             findViewById(id.counter4down)
         )
 
@@ -148,15 +151,16 @@ class Main : Activity() {
         var counters = listOf<TextView> (
             findViewById(id.count),
             findViewById(id.counter2),
+            findViewById(id.counter3Label),
             findViewById(id.counter4)
         )
         // list of each counter's value. order is the same as declared in the button lists. All values start at 0
-        var counterValue = mutableListOf<Int>(0, 0, 0)
+        var counterValue = mutableListOf<Int>(0, 0, 0, 0)
 
 
         counters.forEachIndexed { index, counterView -> // counterView is the element at the index of the counters list
-            var test = if (index != 3) {counterView.hint.toString() + ": " + counterValue[index].toString()}  else {counterValue[index].toString()}
 
+            // update the counter's value in the data map
             setCounterData(counterView, counterValue[index])
 
             // Updates the number on text of the counter. The name is stored in the hint of the textView, which is not visible
@@ -165,7 +169,10 @@ class Main : Activity() {
 
                 // increment the value of this counter when the + is pressed
                 counterValue[index]++
-//                setCounterData(counterView, counterValue[index])
+
+                // update the counter's value in the data map
+                setCounterData(counterView, counterValue[index])
+
                 // Updates the number on the text of the counter when it is incremented
                 counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
             }
@@ -174,13 +181,16 @@ class Main : Activity() {
 
                 // decrement the value of this counter when the - is pressed. The if statement prevents negative numbers
                 if (counterValue[index] > 0) counterValue[index]--
-//                setCounterData(counterView, counterValue[index])
+
+                // update the counter's value in the data map
+                setCounterData(counterView, counterValue[index])
+
                 // updates the number on the text of the counter when it is decremented.
                 counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
             }
 
         }
-        findViewById<Button>(id.counterNext).setOnClickListener {setMalfunctionView()}
+        findViewById<Button>(id.counterNext).setOnClickListener {setMalfunctionView()} // move to next page
         
     }
 
@@ -192,14 +202,18 @@ class Main : Activity() {
         team.text = teamNum.toString()
         team.background = color
 
+        // move to next page on button press
         findViewById<Button>(id.malfNext).setOnClickListener {setFinalView()}
 
+        // create list of radio buttons
         var radioGroup = listOf<View> (
             findViewById(id.malfNothing),
             findViewById(id.malfBroken),
             findViewById(id.malfDisabled),
             findViewById(id.malfNoShow)
         )
+
+        //  set data in map for selected radio button
         radioGroup.forEach() {
             it.setOnClickListener {
                 val x = findViewById<View>(it.id)
@@ -224,19 +238,19 @@ class Main : Activity() {
     }
 
     private fun finish(view: View) {
-        view as TextView
-        var result = view.hint.toString()
-        when (result) {
+        view as TextView // makes view a TextView element
+        var result = view.hint.toString() // create variable for the selected result
+        when (result) { // add result to the data map
             "win" -> data["result"] = "win"
             "tie" -> data["result"] = "tie"
             "lose" -> data["result"] = "lose"
         }
 
-        publishData()
-        onNewStart()
+        publishData() // push data to firebase
+        onNewStart() // start new app
     }
 
-    private fun malfunctionData(view: View) { //TODO: Test to see if having a single data call works (data[ind] = view.text or whatever)
+    private fun malfunctionData(view: View) { // TODO: Document this method
         view as TextView
         val ind = "malfunction"
         when (view.id) {
@@ -259,9 +273,14 @@ class Main : Activity() {
         }
     }
 
-    private fun setCounterData(view: TextView, value: Int) { //TODO: Not broken but doesn't work
-        data.putIfAbsent(view.hint.toString(), 0)
-        data[view.hint.toString()] = value
+    /**
+     * Updates the values in the data map for each counter
+     * @param currentCounter The counter to update as a TextView Element
+     * @param value The current value of the counter
+     */
+    private fun setCounterData(currentCounter: TextView, value: Int) {
+        data.putIfAbsent(currentCounter.hint.toString(), 0)
+        data[currentCounter.hint.toString()] = value // Uses the hint of the counter TextView as the key, and its value to update the data map
     }
 
     private fun setPose (view: View) {
@@ -273,7 +292,7 @@ class Main : Activity() {
     }
 
     // This method
-    fun publishData () {
+    fun publishData () { // TODO: Document this method
         var allValues = listOf<String>(
             "team",
             "pose",
