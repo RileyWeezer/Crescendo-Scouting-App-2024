@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#303030"
+    tools:context=".Main">
+
+    <TextView
+        android:id="@+id/teleName"
+        android:layout_width="200dp"
+        android:layout_height="70dp"
+        android:text="TELE-OP"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="45sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <Button
+        android:id="@+id/teleSwitchAuto"
+        android:layout_width="160dp"
+        android:layout_height="70dp"
+        android:background="#262626"
+        android:text="AUTO"
+        android:textSize="35sp"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:layout_marginTop="15dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/teleName"
+        />
+
+    <TextView
+        android:id="@+id/teleTeam"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@color/black"
+        android:text="2557"
+        android:textColor="@color/white"
+        android:textSize="50sp"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/teleName"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
