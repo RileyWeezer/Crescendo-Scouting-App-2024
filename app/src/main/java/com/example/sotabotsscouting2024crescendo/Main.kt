@@ -2,7 +2,6 @@ package com.example.sotabotsscouting2024crescendo
 
 
 import android.R
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.graphics.drawable.Drawable
@@ -47,25 +46,11 @@ class Main : Activity() {
     }
 
     /**
-     * Hides the System UI of the app while running. Back, Home, and App Navigator should be hidden
-     */
-    private fun hideSystemUI() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        WindowInsetsControllerCompat(window,
-            window.decorView.findViewById(R.id.content)).let { controller ->
-            controller.hide(WindowInsetsCompat.Type.systemBars())
-
-            // Show app navigator panel when bottom of screen is swiped up
-            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
-    }
-
-    /**
      * Starts the app activity and creates initial values of variables
      */
     private fun start() {
         setContentView(layout.start) // Sets view of app to be start layout
-        findViewById<Button>(id.startButton).setOnClickListener() {x -> setPoseView()} // Move to next page on button click
+        findViewById<Button>(id.startButton).setOnClickListener {x -> setPoseView()} // Move to next page on button click
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) // Locks orientation of app to be portrait
         data = mutableMapOf() // Creates a data map for each collectable piece of data
         prevChange = Stack() // Creates a stack of changes used for an undo button (may not use)
@@ -98,7 +83,7 @@ class Main : Activity() {
             findViewById<Button>(id.blue3))
 
         // set the pose for the selected position button
-        poseList.forEach() {z -> z.setOnClickListener() {x -> setPose(x)}}
+        poseList.forEach {z -> z.setOnClickListener {x -> setPose(x)}}
     }
 
     /**
@@ -121,9 +106,9 @@ class Main : Activity() {
         hideSystemUI() // hide system UI
         val initPose = findViewById<TextView>(id.initPose) // create a variable for the position TextView element
         initPose.background = color // sets the color of the position element to correspond with the current robot position
-        initPose.setText(poseTXT) // sets the text of the position element to be the full robot position
+        initPose.text = poseTXT // sets the text of the position element to be the full robot position
 
-        findViewById<Button>(id.initNext).setOnClickListener() {initializeData()} // update data map values
+        findViewById<Button>(id.initNext).setOnClickListener {initializeData()} // update data map values
 
 
     }
@@ -140,7 +125,7 @@ class Main : Activity() {
 
         teamNum = findViewById<EditText>(id.initTeam).text.toString().toInt() // create variable for
         data["pose"] = poseTXT // set full robot position
-        data["team"] = teamNum
+        data["team"] = teamNum // set team number
         data["match"] = findViewById<EditText>(id.initMatch).text.toString().toInt() // set match number
 
         setAuto() // move to the next page
@@ -148,86 +133,10 @@ class Main : Activity() {
 
     }
 
-    // TODO: Change this to real game layout
     /**
-     * Temporary (now deprecated) page to test different styles of counters
-     * Uses + and - buttons to raise and lower the value rather than just tapping the button and undoing
+     * Switches to the autonomous page and keep track of each piece of data in the data map
+     * Uses + and - buttons separate from the counters themselves
      */
-//    private fun setCounter () {
-//        setContentView(layout.counter) // sets content view to the counter page
-//        hideSystemUI() // hides the system ui
-//
-//        // set attributes of team display
-//        val counterTeam = findViewById<TextView>(id.countTeam)
-//        counterTeam.background = color
-//        counterTeam.text = teamNum.toString()
-//
-//        // list of each incrementing button
-//        val incrementers = listOf<Button>(
-//            findViewById(id.increaseCounter),
-//            findViewById(id.increaseCounter2),
-//            findViewById(id.counter3up),
-//            findViewById(id.counter4up)
-//        )
-//
-//        // list of each decrementing button
-//        val decrementers = listOf<Button>(
-//            findViewById(id.lowerCounter),
-//            findViewById(id.lowerCounter2),
-//            findViewById(id.counter3down),
-//            findViewById(id.counter4down)
-//        )
-//
-//        // list of each counter textView
-//        val counters = listOf<TextView> (
-//            findViewById(id.count),
-//            findViewById(id.counter2),
-//            findViewById(id.counter3Label),
-//            findViewById(id.counter4)
-//        )
-//
-//        // list of each counter's value. order is the same as declared in the button lists. All values start at 0
-//        val counterValue = mutableListOf<Int>(0, 0, 0, 0)
-//
-//
-//        counters.forEachIndexed { index, counterView -> // counterView is the element at the index of the counters list
-//
-//            // update the counter's value in the data map
-//            setCounterData(counterView, counterValue[index])
-//
-//            // Updates the number on text of the counter. The name is stored in the hint of the textView, which is not visible
-//            counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
-//
-//            incrementers[index].setOnClickListener{
-//
-//                // increment the value of this counter when the + is pressed
-//                counterValue[index]++
-//
-//                // update the counter's value in the data map
-//                setCounterData(counterView, counterValue[index])
-//
-//                // Updates the number on the text of the counter when it is incremented
-//                counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
-//            }
-//
-//            decrementers[index].setOnClickListener {
-//
-//                // decrement the value of this counter when the - is pressed. The if statement prevents negative numbers
-//                if (counterValue[index] > 0) counterValue[index]--
-//
-//                // update the counter's value in the data map
-//                setCounterData(counterView, counterValue[index])
-//
-//                // updates the number on the text of the counter when it is decremented.
-//                counterView.text = counterView.hint.toString() + ": " + counterValue[index].toString()
-//            }
-//
-//        }
-//        findViewById<Button>(id.counterNext).setOnClickListener {setMalfunctionView()} // move to next page
-//
-//    }
-
-    @SuppressLint("SetTextI18n") // get rid of annoying warning
     private fun setAuto () { // TODO: document again
         setContentView(layout.auto) // sets the content view to the auto page
         hideSystemUI() // hides system ui
@@ -237,53 +146,62 @@ class Main : Activity() {
         team.text = teamNum.toString()
         team.background = color
 
+        // create a list of textview elements for the counter labels. they will display the value of the counter
         val counters = listOf<TextView> (
             findViewById(id.autoSpeakerCount),
             findViewById(id.autoAmpCount)
         )
+        // create a list of button elements for the counter incrementers. they will increase the value of their associated counter
         val incrementers = listOf<Button>(
             findViewById(id.autoSpeakerUp),
             findViewById(id.autoAmpUp)
         )
+        // create a list of button elements for the counter decrementers. they will decrease the value of their associated counter
         val decrementors = listOf<Button>(
             findViewById(id.autoSpeakerDown),
             findViewById(id.autoAmpDown)
         )
-        val counterValues = mutableListOf<Int>(
-            if (data["auto" + counters[0].hint.toString()] == null) 0
-            else data["auto" + counters[0].hint.toString()].toString().toInt(),
+        // create a list of integers for the counter values. they are updated when incremented or decremented and displayed on the labels
+        val counterValues = mutableListOf(
+            if (data["auto" + counters[0].hint.toString()] == null) 0 // if the value has not yet been initially displayed and/or edited, set them to 0
+            else data["auto" + counters[0].hint.toString()].toString().toInt(), // if the value has been displayed and/or edited, set them to their value in the data map
             if (data["auto" + counters[1].hint.toString()] == null) 0
             else data["auto" + counters[1].hint.toString()].toString().toInt()
         )
 
-        counters.forEachIndexed { index, counterLabel ->
+        counters.forEachIndexed { index, counterLabel -> // counter label is the textview at the index of the counters list
 
+            // update the data map for the current counter
             setCounterData(counterLabel, counterValues[index], "auto")
 
+            // update the counter label for the current counter
             counterLabel.text = createNewLabel(counterLabel, counterValues[index])
 
-//            counterLabel.text = counterLabel.hint.toString() + ": " +
-//                    if (data["auto" + counterLabel.hint.toString()] == null) 0
-//                    else data["auto" + counterLabel.hint.toString()]
-
-            counterLabel.text = counterLabel.hint.toString() + ": " + data["auto" + counterLabel.hint.toString()]
+            // on click of the incrementer associated with the current counter
             incrementers[index].setOnClickListener {
 
+                // increase value of the current counter
                 counterValues[index]++
 
+                // update data in the data map for the current counter
                 setCounterData(counterLabel, counterValues[index], "auto")
 
+                // update the label of the current counter
                 counterLabel.text = createNewLabel(counterLabel, counterValues[index])
 
 
             }
 
+            // on click of the decrementer associated with the current counter
             decrementors[index].setOnClickListener {
 
+                // if the counter's value is greater than 0, decrease it. this will eliminate the possibility of negative numbers
                 if (counterValues[index] > 0) counterValues[index]--
 
+                // update the counter's data in the data map
                 setCounterData(counterLabel, counterValues[index], "auto")
 
+                // update the counter's label with the new value
                 counterLabel.text = createNewLabel(counterLabel, counterValues[index])
 
             }
@@ -291,88 +209,99 @@ class Main : Activity() {
 
         }
 
+        // when the checkbox is pressed
         findViewById<CheckBox>(id.autoLeave).setOnClickListener {
 
-            data.putIfAbsent("autoLeave", 0)
-            data.compute("autoLeave") { k, v -> return@compute if (v == 1) 0 else 1 }
+            data.putIfAbsent("autoLeave", 0) // put value to data map if none is present
+            data.compute("autoLeave") { k, v -> return@compute if (v == 1) 0 else 1 } // if value is 1, set to 0. if not, set to 1
         }
-        findViewById<Button>(id.autoSwitchTele).setOnClickListener{ setTele() }
+        findViewById<Button>(id.autoSwitchTele).setOnClickListener{ setTele() } // move to teleop page
 
 
     }
 
+    /**
+     * Switches to the teleop page and keep track of each piece of data in the data map
+     * Uses + and - buttons separate from the counters themselves
+     */
     private fun setTele() {
-        setContentView(layout.teleop)
-        hideSystemUI()
+        setContentView(layout.teleop) // switch page to teleop
+        hideSystemUI() // hide system ui
 
+        // set attributes of team display
         val teamID = findViewById<TextView>(id.teleTeam)
         teamID.text = teamNum.toString()
         teamID.background = color
 
+        // create list of textview elements for each counter label
         val counters = listOf<TextView> (
             findViewById(id.teleSpeaker),
             findViewById(id.teleAmp),
             findViewById(id.teleTrap)
         )
 
+        // create list of buttons for each incrementer
         val incrementers = listOf<Button> (
             findViewById(id.teleSpeakerUp),
             findViewById(id.teleAmpUp),
             findViewById(id.teleTrapUp)
         )
 
+        // create list of buttons for each decrementer
         val decrementers = listOf<Button> (
             findViewById(id.teleSpeakerDown),
             findViewById(id.teleAmpDown),
             findViewById(id.teleTrapDown)
         )
 
-        val counterValues = mutableListOf<Int> (
-            if (data["tele" + counters[0].hint.toString()] == null) 0
-            else data["tele" + counters[0].hint.toString()].toString().toInt(),
-            if (data["tele" + counters[1].hint.toString()] == null) 0
+        // create list of integers for each counter value
+        val counterValues = mutableListOf (
+            if (data["tele" + counters[0].hint.toString()] == null) 0 // if this counter value does not exist yet in the data map, set to 0
+            else data["tele" + counters[0].hint.toString()].toString().toInt(), // if this counter value does exist in the data map, keep it at that value
+            if (data["tele" + counters[1].hint.toString()] == null) 0 // for each counter
             else data["tele" + counters[1].hint.toString()].toString().toInt(),
             if (data["tele" + counters[2].hint.toString()] == null) 0
             else data["tele" + counters[2].hint.toString()].toString().toInt()
-//        0, 0, 0
         )
 
-//        counterValues.forEach() {
-//            var x = it
-//            var temp = counters[x]
-//            temp.text = temp.hint.toString() + if(data["tele" + temp.hint.toString()] == null) 0 else data["tele" + temp.hint.toString()]
-//        }
 
-        counters.forEachIndexed { index, counterLabel ->
+        counters.forEachIndexed { index, counterLabel -> // counter label is the textView element at index of the counters list
 
+            // updates the data map for the current counter
             setCounterData(counterLabel, counterValues[index], "tele")
 
+            // updates the label for the current counter
             counterLabel.text = createNewLabel(counterLabel, counterValues[index])
 
+            // on click of the incrementer associated with the current counter
             incrementers[index].setOnClickListener {
-                counterValues[index]++
-                setCounterData(counterLabel, counterValues[index], "tele")
-                counterLabel.text = createNewLabel(counterLabel, counterValues[index])
+                counterValues[index]++ // increase value of the current counter
+                setCounterData(counterLabel, counterValues[index], "tele") // update the data map
+                counterLabel.text = createNewLabel(counterLabel, counterValues[index]) // update the counter label
             }
+            // on click of the decrementer associated with the current counter
             decrementers[index].setOnClickListener {
-                if (counterValues[index] > 0) counterValues[index]--
-                setCounterData(counterLabel, counterValues[index], "tele")
-                counterLabel.text = createNewLabel(counterLabel, counterValues[index])
+                if (counterValues[index] > 0) counterValues[index]-- // if value is above zero, decrease (gets rid of negative numbers)
+                setCounterData(counterLabel, counterValues[index], "tele") // update the data map
+                counterLabel.text = createNewLabel(counterLabel, counterValues[index]) // update the counter label
             }
 
         }
 
+        // when the checkbox is pressed
         findViewById<CheckBox>(id.teleClimb).setOnClickListener {
-            data.putIfAbsent("teleClimb", 0)
-            data.compute("teleClimb") { k, v -> return@compute if (v == 1) 0 else 1 }
-        }
-        findViewById<CheckBox>(id.teleCoop).setOnClickListener{
-            data.putIfAbsent("teleCoop", 0)
-            data.compute("teleCoop") { k, v -> return@compute if (v == 1) 0 else 1 }
+            data.putIfAbsent("teleClimb", 0) // put value to data map if none is present
+            data.compute("teleClimb") { k, v -> return@compute if (v == 1) 0 else 1 } // if value is 1, set to 0. if not, set to 0
         }
 
-        findViewById<Button>(id.teleSwitchAuto).setOnClickListener {setAuto()}
-        findViewById<Button>(id.teleFinished).setOnClickListener { setMalfunctionView() }
+        // when the checkbox is pressed
+        findViewById<CheckBox>(id.teleCoop).setOnClickListener{
+            data.putIfAbsent("teleCoop", 0) // put value to data map if none is present
+            data.compute("teleCoop") { k, v -> return@compute if (v == 1) 0 else 1 } // if value is 1, set to 0. if not, set to 0
+        }
+
+        findViewById<Button>(id.teleSwitchAuto).setOnClickListener {setAuto()} // switch back to auto page
+        findViewById<Button>(id.teleFinished).setOnClickListener { setMalfunctionView() } // move on to malfunction page
 
     }
 
@@ -380,12 +309,10 @@ class Main : Activity() {
      * Updates the values in the data map for a given counter. Used for the auto and teleop pages
      * @param currentCounter The counter to update as a TextView element
      * @param value The current integer value of the counter
-     * @param opMode The current opmode of the app as an integer (0 is auto, 1 is teleop)
+     * @param opMode The current opmode of the app as a string (auto / tele)
      */
     private fun setCounterData(currentCounter: TextView, value: Int, opMode: String) {
-//        var suffix: String
-//        suffix = if (mode == 0) "Auto" else "Tele"
-        data.putIfAbsent(opMode + currentCounter.hint.toString(), 0)
+        data.putIfAbsent(opMode + currentCounter.hint.toString(), 0) // put value to the data map if none is present
         data[opMode + currentCounter.hint.toString()] = value // Uses the hint of the counter TextView as the key, and its value to update the data map
     }
 
@@ -425,57 +352,32 @@ class Main : Activity() {
 
 
         //  set data in map for selected radio button
-        radioGroup.forEach() {
+        radioGroup.forEach {
             it.setOnClickListener {
-                val x = findViewById<View>(it.id) as TextView
-                data.putIfAbsent("malfunction", "Nothing Wrong")
-                data["malfunction"] = x.text.toString()
+                val x = findViewById<View>(it.id) as TextView // create textview element variable for the selected radio button
+                data.putIfAbsent("malfunction", 0) // put value to data map if none is present
+                data["malfunction"] = x.text.toString() // sets malfunction value to the text of the pressed radio button
             }
         }
 
+        // when the checkbox is pressed
         findViewById<CheckBox>(id.malfYellow).setOnClickListener {
-            data.putIfAbsent("yellowCard", 0)
-            data.compute("yellowCard") { k, v -> return@compute if (v == 1) 0 else 1 }
+            data.putIfAbsent("yellowCard", 0) // put value to data map if none is present
+            data.compute("yellowCard") { k, v -> return@compute if (v == 1) 0 else 1 } // if value is 1 make zero, otherwise make one
         }
+
+        // when the checkbox is pressed
         findViewById<CheckBox>(id.malfRed).setOnClickListener {
-            data.putIfAbsent("redCard", 0)
-            data.compute("redCard") { k, v -> return@compute if (v == 1) 0 else 1 }
+            data.putIfAbsent("redCard", 0) // put value to data map if none is present
+            data.compute("redCard") { k, v -> return@compute if (v == 1) 0 else 1 } // if value is 1 make zero, otherwise make one
         }
 
 
     }
 
-    /**
-     * Updates the malfunction value in the data map. Should be executed upon any change to the malfunction radio.
-     * @param view The radio button that was most recently pressed
-     */
-    private fun malfunctionData(view: View) {
-        view as TextView // set view to be a TextView element
-        val ind = "malfunction" // create variable for the malfunction key in the data map
-//        when (view.id) { // condition for each malfunction type
-//            id.malfNothing -> { // when nothing wrong is selected
-//                data.putIfAbsent(ind, "Nothing Wrong")
-//                data[ind] = "Nothing Wrong"
-//            }
-//            id.malfBroken -> { // when broken mechanism is selected
-//                data.putIfAbsent(ind, 1)
-//                data[ind] = "Broken Mechanism"
-//            }
-//            id.malfDisabled -> { // when disabled is selected
-//                data.putIfAbsent(ind, 2)
-//                data[ind] = "Disabled"
-//            }
-//            id.malfNoShow -> { // when no show is selected
-//                data.putIfAbsent(ind, 3)
-//                data[ind] = "No Show"
-//            }
-//        }
-        data.putIfAbsent("malfunction", "Nothing Wrong")
-        data["malfunction"] = view.text.toString()
-    }
 
     /**
-     * Sets the content view to the game result selector
+     * Sets the content view to the game result selector and keeps track of necessary data
      */
     private fun setFinalView () {
         setContentView(layout.result) // sets content view to result page
@@ -486,26 +388,27 @@ class Main : Activity() {
         team.text = teamNum.toString()
         team.background = color
 
-        val rankCount = findViewById<TextView>(id.resultRankPts)
-        val rankUp = findViewById<Button>(id.resultRankPtsUp)
-        val rankDown = findViewById<Button>(id.resultRankPtsDown)
-        var rankPts = if (data["rankingPoints"]==null) 0 else data["rankingPoints"] as Int
+        val rankCount = findViewById<TextView>(id.resultRankPts) // create textview element for the counter label
+        val rankUp = findViewById<Button>(id.resultRankPtsUp) // create button element for the counter incrementer
+        val rankDown = findViewById<Button>(id.resultRankPtsDown) // create button element for the counter decrementer
+        var rankPts = if (data["rankingPoints"]==null) 0 else data["rankingPoints"] as Int // create value of the counter
 
-        rankCount.text = createNewLabel(rankCount, rankPts)
+        rankCount.text = createNewLabel(rankCount, rankPts) // update the label of the counter
 
-        data.putIfAbsent("rankingPoints", 0)
+        data.putIfAbsent("rankingPoints", 0) // update the counter data in the data map
         data["rankingPoints"] = rankPts
 
+        // on click of the incrementer associated with the counter
         rankUp.setOnClickListener {
-            rankPts++
-            rankCount.text = createNewLabel(rankCount, rankPts)
-            data.putIfAbsent("rankingPoints", 0)
+            rankPts++ // increase counter value
+            rankCount.text = createNewLabel(rankCount, rankPts) // update the label of the counter
+            data.putIfAbsent("rankingPoints", 0) // update the counter data in the data map
             data["rankingPoints"] = rankPts
         }
         rankDown.setOnClickListener {
-            if (rankPts > 0) rankPts--
-            rankCount.text = createNewLabel(rankCount, rankPts)
-            data.putIfAbsent("rankingPoints", 0)
+            if (rankPts > 0) rankPts-- // if the counter value is above zero, decrease it
+            rankCount.text = createNewLabel(rankCount, rankPts) // update the label of the counter
+            data.putIfAbsent("rankingPoints", 0) // update the counter data in the data map
             data["rankingPoints"] = rankPts
         }
 
@@ -521,8 +424,8 @@ class Main : Activity() {
      */
     private fun finish(view: View) {
         view as TextView // make view a TextView element
-        val result = view.hint.toString() // create variable for the selected result
-        when (result) { // add result to the data map
+        when (view.hint.toString()) { // create variable for the selected result
+            // add result to the data map
             "win" -> data["result"] = "win"
             "tie" -> data["result"] = "tie"
             "lose" -> data["result"] = "lose"
@@ -538,7 +441,7 @@ class Main : Activity() {
     private fun publishData () {
 
         // create a list of strings as the keys for each piece of data to be collected and uploaded
-        val allValues = listOf<String>(
+        val allValues = listOf(
             "team",
             "pose",
             "match",
@@ -570,6 +473,20 @@ class Main : Activity() {
         // upload the data map to the created database reference
         ref.setValue(data)
 
+    }
+
+    /**
+     * Hides the System UI of the app while running. Back, Home, and App Navigator should be hidden
+     */
+    private fun hideSystemUI() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window,
+            window.decorView.findViewById(R.id.content)).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+
+            // Show app navigator panel when bottom of screen is swiped up
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
     }
 
 
