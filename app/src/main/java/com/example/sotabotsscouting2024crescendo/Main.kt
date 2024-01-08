@@ -2,6 +2,7 @@ package com.example.sotabotsscouting2024crescendo
 
 
 import android.R
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.graphics.drawable.Drawable
@@ -139,7 +140,7 @@ class Main : Activity() {
 
         teamNum = findViewById<EditText>(id.initTeam).text.toString().toInt() // create variable for
         data["pose"] = poseTXT // set full robot position
-        data["team"] = teamNum // set team number
+        data["team"] = teamNum
         data["match"] = findViewById<EditText>(id.initMatch).text.toString().toInt() // set match number
 
         setAuto() // move to the next page
@@ -226,6 +227,7 @@ class Main : Activity() {
 //
 //    }
 
+    @SuppressLint("SetTextI18n") // get rid of annoying warning
     private fun setAuto () { // TODO: document again
         setContentView(layout.auto) // sets the content view to the auto page
         hideSystemUI() // hides system ui
@@ -237,27 +239,34 @@ class Main : Activity() {
 
         val counters = listOf<TextView> (
             findViewById(id.autoSpeakerCount),
-            findViewById(id.autoAmpCount),
-            findViewById(id.autoFoulCount)
+            findViewById(id.autoAmpCount)
         )
         val incrementers = listOf<Button>(
             findViewById(id.autoSpeakerUp),
-            findViewById(id.autoAmpUp),
-            findViewById(id.autoFoulUp)
+            findViewById(id.autoAmpUp)
         )
         val decrementors = listOf<Button>(
             findViewById(id.autoSpeakerDown),
-            findViewById(id.autoAmpDown),
-            findViewById(id.autoFoulDown)
+            findViewById(id.autoAmpDown)
         )
-        val counterValues = mutableListOf<Int>(0,0,0)
+        val counterValues = mutableListOf<Int>(
+            if (data["auto" + counters[0].hint.toString()] == null) 0
+            else data["auto" + counters[0].hint.toString()].toString().toInt(),
+            if (data["auto" + counters[1].hint.toString()] == null) 0
+            else data["auto" + counters[1].hint.toString()].toString().toInt()
+        )
 
         counters.forEachIndexed { index, counterLabel ->
 
-//            setCounterData(counterLabel, counterValues[index], "auto")
+            setCounterData(counterLabel, counterValues[index], "auto")
 
             counterLabel.text = createNewLabel(counterLabel, counterValues[index])
 
+//            counterLabel.text = counterLabel.hint.toString() + ": " +
+//                    if (data["auto" + counterLabel.hint.toString()] == null) 0
+//                    else data["auto" + counterLabel.hint.toString()]
+
+            counterLabel.text = counterLabel.hint.toString() + ": " + data["auto" + counterLabel.hint.toString()]
             incrementers[index].setOnClickListener {
 
                 counterValues[index]++
@@ -271,7 +280,7 @@ class Main : Activity() {
 
             decrementors[index].setOnClickListener {
 
-                counterValues[index]--
+                if (counterValues[index] > 0) counterValues[index]--
 
                 setCounterData(counterLabel, counterValues[index], "auto")
 
@@ -284,8 +293,8 @@ class Main : Activity() {
 
         findViewById<CheckBox>(id.autoLeave).setOnClickListener {
 
-            data.putIfAbsent("leave", 0)
-            data.compute("leave") { k, v -> return@compute if (v == 1) 0 else 1 }
+            data.putIfAbsent("autoLeave", 0)
+            data.compute("autoLeave") { k, v -> return@compute if (v == 1) 0 else 1 }
         }
         findViewById<Button>(id.autoSwitchTele).setOnClickListener{ setTele() }
 
@@ -301,18 +310,38 @@ class Main : Activity() {
         teamID.background = color
 
         val counters = listOf<TextView> (
-
+            findViewById(id.teleSpeaker),
+            findViewById(id.teleAmp),
+            findViewById(id.teleTrap)
         )
 
         val incrementers = listOf<Button> (
-
+            findViewById(id.teleSpeakerUp),
+            findViewById(id.teleAmpUp),
+            findViewById(id.teleTrapUp)
         )
 
         val decrementers = listOf<Button> (
-
+            findViewById(id.teleSpeakerDown),
+            findViewById(id.teleAmpDown),
+            findViewById(id.teleTrapDown)
         )
 
-        val counterValues = mutableListOf<Int> ()
+        val counterValues = mutableListOf<Int> (
+            if (data["tele" + counters[0].hint.toString()] == null) 0
+            else data["tele" + counters[0].hint.toString()].toString().toInt(),
+            if (data["tele" + counters[1].hint.toString()] == null) 0
+            else data["tele" + counters[1].hint.toString()].toString().toInt(),
+            if (data["tele" + counters[2].hint.toString()] == null) 0
+            else data["tele" + counters[2].hint.toString()].toString().toInt()
+//        0, 0, 0
+        )
+
+//        counterValues.forEach() {
+//            var x = it
+//            var temp = counters[x]
+//            temp.text = temp.hint.toString() + if(data["tele" + temp.hint.toString()] == null) 0 else data["tele" + temp.hint.toString()]
+//        }
 
         counters.forEachIndexed { index, counterLabel ->
 
@@ -333,7 +362,17 @@ class Main : Activity() {
 
         }
 
+        findViewById<CheckBox>(id.teleClimb).setOnClickListener {
+            data.putIfAbsent("teleClimb", 0)
+            data.compute("teleClimb") { k, v -> return@compute if (v == 1) 0 else 1 }
+        }
+        findViewById<CheckBox>(id.teleCoop).setOnClickListener{
+            data.putIfAbsent("teleCoop", 0)
+            data.compute("teleCoop") { k, v -> return@compute if (v == 1) 0 else 1 }
+        }
+
         findViewById<Button>(id.teleSwitchAuto).setOnClickListener {setAuto()}
+        findViewById<Button>(id.teleFinished).setOnClickListener { setMalfunctionView() }
 
     }
 
@@ -383,13 +422,26 @@ class Main : Activity() {
             findViewById(id.malfNoShow)
         )
 
+
+
         //  set data in map for selected radio button
         radioGroup.forEach() {
             it.setOnClickListener {
-                val x = findViewById<View>(it.id)
-                malfunctionData(x)
+                val x = findViewById<View>(it.id) as TextView
+                data.putIfAbsent("malfunction", "Nothing Wrong")
+                data["malfunction"] = x.text.toString()
             }
         }
+
+        findViewById<CheckBox>(id.malfYellow).setOnClickListener {
+            data.putIfAbsent("yellowCard", 0)
+            data.compute("yellowCard") { k, v -> return@compute if (v == 1) 0 else 1 }
+        }
+        findViewById<CheckBox>(id.malfRed).setOnClickListener {
+            data.putIfAbsent("redCard", 0)
+            data.compute("redCard") { k, v -> return@compute if (v == 1) 0 else 1 }
+        }
+
 
     }
 
@@ -400,24 +452,26 @@ class Main : Activity() {
     private fun malfunctionData(view: View) {
         view as TextView // set view to be a TextView element
         val ind = "malfunction" // create variable for the malfunction key in the data map
-        when (view.id) { // condition for each malfunction type
-            id.malfNothing -> { // when nothing wrong is selected
-                data.putIfAbsent(ind, 0)
-                data[ind] = "Nothing Wrong"
-            }
-            id.malfBroken -> { // when broken mechanism is selected
-                data.putIfAbsent(ind, 1)
-                data[ind] = "Broken Mechanism"
-            }
-            id.malfDisabled -> { // when disabled is selected
-                data.putIfAbsent(ind, 2)
-                data[ind] = "Disabled"
-            }
-            id.malfNoShow -> { // when no show is selected
-                data.putIfAbsent(ind, 3)
-                data[ind] = "No Show"
-            }
-        }
+//        when (view.id) { // condition for each malfunction type
+//            id.malfNothing -> { // when nothing wrong is selected
+//                data.putIfAbsent(ind, "Nothing Wrong")
+//                data[ind] = "Nothing Wrong"
+//            }
+//            id.malfBroken -> { // when broken mechanism is selected
+//                data.putIfAbsent(ind, 1)
+//                data[ind] = "Broken Mechanism"
+//            }
+//            id.malfDisabled -> { // when disabled is selected
+//                data.putIfAbsent(ind, 2)
+//                data[ind] = "Disabled"
+//            }
+//            id.malfNoShow -> { // when no show is selected
+//                data.putIfAbsent(ind, 3)
+//                data[ind] = "No Show"
+//            }
+//        }
+        data.putIfAbsent("malfunction", "Nothing Wrong")
+        data["malfunction"] = view.text.toString()
     }
 
     /**
@@ -431,6 +485,29 @@ class Main : Activity() {
         val team = findViewById<TextView>(id.resultTeam)
         team.text = teamNum.toString()
         team.background = color
+
+        val rankCount = findViewById<TextView>(id.resultRankPts)
+        val rankUp = findViewById<Button>(id.resultRankPtsUp)
+        val rankDown = findViewById<Button>(id.resultRankPtsDown)
+        var rankPts = if (data["rankingPoints"]==null) 0 else data["rankingPoints"] as Int
+
+        rankCount.text = createNewLabel(rankCount, rankPts)
+
+        data.putIfAbsent("rankingPoints", 0)
+        data["rankingPoints"] = rankPts
+
+        rankUp.setOnClickListener {
+            rankPts++
+            rankCount.text = createNewLabel(rankCount, rankPts)
+            data.putIfAbsent("rankingPoints", 0)
+            data["rankingPoints"] = rankPts
+        }
+        rankDown.setOnClickListener {
+            if (rankPts > 0) rankPts--
+            rankCount.text = createNewLabel(rankCount, rankPts)
+            data.putIfAbsent("rankingPoints", 0)
+            data["rankingPoints"] = rankPts
+        }
 
         // end app with specific result
         findViewById<Button>(id.resultWin).setOnClickListener { finish(it) }
@@ -467,13 +544,15 @@ class Main : Activity() {
             "match",
             "autoSpeaker",
             "autoAmp",
-            "autoFouls",
+            "autoLeave",
             "teleSpeaker",
             "teleAmp",
-            "teleFouls",
             "teleClimb",
-            "teleSpotlights",
-            "leave",
+            "teleTrap",
+            "teleCoop",
+            "rankingPoints",
+            "yellowCard",
+            "redCard",
             "malfunction",
             "result"
         )
