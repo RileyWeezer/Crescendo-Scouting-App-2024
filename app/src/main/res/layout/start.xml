@@ -8,6 +8,15 @@
     tools:context=".Main">
 
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src= "@drawable/logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/startButton"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
     <Button
         android:id="@+id/startButton"
         android:layout_width="180dp"
@@ -25,19 +34,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <TextView
-        android:id="@+id/startText"
-        android:layout_width="wrap_content"
-        android:layout_height="500dp"
-        android:text="SOTAbots\n\nCrescendo Scouting"
-        android:textColor="@color/black"
-        android:textSize="75sp"
-        android:textAlignment="center"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.2"
-        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
