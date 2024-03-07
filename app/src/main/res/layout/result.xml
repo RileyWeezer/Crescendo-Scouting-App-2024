@@ -67,7 +67,7 @@
         android:layout_width="220dp"
         android:layout_height="100dp"
         android:background="#222222"
-        android:text="Ranking Pts: 0"
+        android:text="Ranking Points"
         android:hint="Ranking Pts"
         android:textColor="@color/white"
         android:textSize="30sp"
@@ -75,44 +75,24 @@
         android:layout_marginTop="30dp"
         app:layout_constraintStart_toStartOf="@+id/resultWin"
         app:layout_constraintTop_toBottomOf="@+id/resultTeam"/>
-    <TextView
-        android:layout_width="104dp"
+
+    <EditText
+        android:id="@+id/resultRankPtsNum"
+        android:layout_width="210dp"
         android:layout_height="50dp"
         android:background="#181818"
-        android:text="-"
-        android:textColor="@color/white"
-        android:textSize="35sp"
+        android:hint="Enter Pts"
+        android:inputType="number|none"
+        android:textColorHint="@color/white"
+        android:textSize="25sp"
         android:textAlignment="center"
-        android:layout_marginBottom="4dp"
-        android:layout_marginStart="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/resultRankPts"
-        app:layout_constraintStart_toStartOf="@+id/resultRankPts"/>
-    <TextView
-        android:layout_width="104dp"
-        android:layout_height="50dp"
-        android:background="#181818"
-        android:text="+"
-        android:textColor="@color/white"
-        android:textSize="35sp"
-        android:textAlignment="center"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/resultRankPts"
-        app:layout_constraintEnd_toEndOf="@+id/resultRankPts"/>
-    <Button
-        android:id="@+id/resultRankPtsDown"
-        android:layout_width="110dp"
-        android:layout_height="100dp"
-        android:background="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="@+id/resultRankPts"
-        app:layout_constraintStart_toStartOf="@+id/resultRankPts"/>
-    <Button
-        android:id="@+id/resultRankPtsUp"
-        android:layout_width="110dp"
-        android:layout_height="100dp"
-        android:background="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="@+id/resultRankPts"
-        app:layout_constraintEnd_toEndOf="@+id/resultRankPts"/>
+        app:layout_constraintStart_toStartOf="@+id/resultRankPts"
+        app:layout_constraintEnd_toEndOf="@id/resultRankPts"
+        app:layout_constraintTop_toTopOf="@id/resultRankPts"
+        app:layout_constraintBottom_toBottomOf="@id/resultRankPts"
+        app:layout_constraintVertical_bias="0.92" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

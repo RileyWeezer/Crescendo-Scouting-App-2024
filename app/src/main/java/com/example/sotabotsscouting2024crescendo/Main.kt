@@ -388,39 +388,36 @@ class Main : Activity() {
         team.text = teamNum.toString()
         team.background = color
 
-        val rankCount = findViewById<TextView>(id.resultRankPts) // create textview element for the counter label
-        val rankUp = findViewById<Button>(id.resultRankPtsUp) // create button element for the counter incrementer
-        val rankDown = findViewById<Button>(id.resultRankPtsDown) // create button element for the counter decrementer
-        var rankPts = if (data["rankingPoints"]==null) 0 else data["rankingPoints"] as Int // create value of the counter
+        // check for ranking point data, set point data to map
+        findViewById<Button>(id.resultWin).setOnClickListener { setResultData(it) }
+        findViewById<Button>(id.resultTie).setOnClickListener { setResultData(it) }
+        findViewById<Button>(id.resultLose).setOnClickListener { setResultData(it) }
 
-        rankCount.text = createNewLabel(rankCount, rankPts) // update the label of the counter
+    }
 
-        data.putIfAbsent("rankingPoints", 0) // update the counter data in the data map
-        data["rankingPoints"] = rankPts
+    /**
+     * Checks to see if user has entered a ranking point value for this match. Only move on if there is one
+     * Sets rank point result data in the map
+     * @param view Result element for the specified result (win/lose/tie)
+     */
+    private fun setResultData (view: View) {
+        val rankPoints = findViewById<EditText>(id.resultRankPtsNum)
 
-        // on click of the incrementer associated with the counter
-        rankUp.setOnClickListener {
-            rankPts++ // increase counter value
-            rankCount.text = createNewLabel(rankCount, rankPts) // update the label of the counter
-            data.putIfAbsent("rankingPoints", 0) // update the counter data in the data map
-            data["rankingPoints"] = rankPts
+        // if user has not entered rank point data, go back to view page
+        if (rankPoints.text.toString() == "") {
+            return
         }
-        rankDown.setOnClickListener {
-            if (rankPts > 0) rankPts-- // if the counter value is above zero, decrease it
-            rankCount.text = createNewLabel(rankCount, rankPts) // update the label of the counter
-            data.putIfAbsent("rankingPoints", 0) // update the counter data in the data map
-            data["rankingPoints"] = rankPts
-        }
+        // put rank point data to map
+        data.putIfAbsent("rankingPoints", 0)
+        data["rankingPoints"] = rankPoints.text.toString().toInt()
 
-        // end app with specific result
-        findViewById<Button>(id.resultWin).setOnClickListener { finish(it) }
-        findViewById<Button>(id.resultTie).setOnClickListener { finish(it) }
-        findViewById<Button>(id.resultLose).setOnClickListener { finish(it) }
+        // finish app
+        finish(view)
     }
 
     /**
      * Updates result data in the map, ends this instance of the app and starts a new one
-     * @param view Result element for the specified result (win, lose)
+     * @param view Result element for the specified result (win/lose/tie)
      */
     private fun finish(view: View) {
         view as TextView // make view a TextView element
